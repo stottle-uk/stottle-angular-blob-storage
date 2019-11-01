@@ -5,9 +5,9 @@ import { BlobUploadProgress } from '../services/azureStorage';
   selector: 'app-file-uploader',
   template: `
     <input type="file" multiple="multiple" (change)="onSelected($event)" />
-    <div *ngIf="uploadProgress as progress">
+    <div *ngIf="isUploadInProgress">
       <h2>Upload Progress</h2>
-      <pre>{{ progress | json }}</pre>
+      <pre>{{ uploadProgress | json }}</pre>
     </div>
   `,
   styles: []
@@ -15,6 +15,12 @@ import { BlobUploadProgress } from '../services/azureStorage';
 export class FileUploaderComponent {
   @Input() uploadProgress: BlobUploadProgress[];
   @Output() onFilesSelected = new EventEmitter<FileList>();
+
+  get isUploadInProgress() {
+    return (
+      this.uploadProgress && this.uploadProgress.some(up => up.progress < 100)
+    );
+  }
 
   onSelected(event: any) {
     this.onFilesSelected.emit(event.target.files as FileList);

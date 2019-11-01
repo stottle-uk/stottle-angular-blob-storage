@@ -4,9 +4,15 @@ import {
   BlobItem,
   ContainerItem
 } from '@azure/storage-blob';
-import { from, Observable, ReplaySubject } from 'rxjs';
+import {
+  BehaviorSubject,
+  from,
+  MonoTypeOperatorFunction,
+  Observable
+} from 'rxjs';
 import {
   combineAll,
+  filter,
   finalize,
   map,
   switchMap,
@@ -58,7 +64,7 @@ export class AppComponent implements OnInit {
   containers$: Observable<ContainerItem[]>;
   filesInContainer$: Observable<BlobItem[]>;
   blobDeleteResponse$: Observable<BlobDeleteResponse>;
-  selectedContainerInner$ = new ReplaySubject<string>(1);
+  selectedContainerInner$ = new BehaviorSubject<string>(undefined);
 
   get selectedContainer$() {
     return this.selectedContainerInner$.asObservable();
@@ -75,6 +81,7 @@ export class AppComponent implements OnInit {
     );
 
     this.filesInContainer$ = this.selectedContainer$.pipe(
+      filter(container => !!container),
       withLatestFrom(this.getStorageOptions()),
       switchMap(([container, info]) =>
         this.blobStorage.listBlobsInContainer({ ...info, container })
@@ -96,7 +103,7 @@ export class AppComponent implements OnInit {
             container,
             filename
           })
-          .pipe(finalize(() => this.selectedContainerInner$.next(container)))
+          .pipe(this.finaliseBlobChange(container))
       )
     );
   }
@@ -116,15 +123,26 @@ export class AppComponent implements OnInit {
           .uploadToBlobStorage(file, {
             ...info,
             container,
-            filename: file.name // + new Date().getTime()
+            filename: file.name + new Date().getTime()
           })
           .pipe(
             map(progress => ({
               filename: file.name,
               progress: parseInt(((progress / file.size) * 100).toString(), 10)
             })),
-            finalize(() => this.selectedContainerInner$.next(container))
+            this.finaliseBlobChange(container)
           )
+      )
+    );
+
+  private finaliseBlobChange = <T>(
+    container: string
+  ): MonoTypeOperatorFunction<T> => source =>
+    source.pipe(
+      finalize(
+        () =>
+          this.selectedContainerInner$.value === container &&
+          this.selectedContainerInner$.next(container)
       )
     );
 
