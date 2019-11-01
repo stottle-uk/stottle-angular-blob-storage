@@ -1,16 +1,25 @@
-import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-
+import { BrowserModule } from '@angular/platform-browser';
+import { BlobServiceClient } from '@azure/storage-blob';
 import { AppComponent } from './app.component';
+import {
+  BlobConnectionString,
+  BLOB_STORAGE_TOKEN
+} from './azure-storage/azureStorage';
+
+export function azureBlobStorageFactory(): BlobConnectionString {
+  return BlobServiceClient.fromConnectionString;
+}
 
 @NgModule({
-  declarations: [
-    AppComponent
+  declarations: [AppComponent],
+  imports: [BrowserModule],
+  providers: [
+    {
+      provide: BLOB_STORAGE_TOKEN,
+      useFactory: azureBlobStorageFactory
+    }
   ],
-  imports: [
-    BrowserModule
-  ],
-  providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}
