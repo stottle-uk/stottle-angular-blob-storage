@@ -34,9 +34,16 @@ export type BlobConnectionString = (
   options?: StoragePipelineOptions
 ) => BlobServiceClient;
 
-export interface BlobUploadRequest {
+export interface BlobStorageOptions {
   storageUri: string;
   storageAccessToken: string;
+}
+
+export interface BlobContainerListRequest extends BlobStorageOptions {
+  container: string;
+}
+
+export interface BlobUploadRequest extends BlobStorageOptions {
   container: string;
   filename: string;
 }

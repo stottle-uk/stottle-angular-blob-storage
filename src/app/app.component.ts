@@ -4,8 +4,16 @@ import {
   BlobItem,
   ContainerItem
 } from '@azure/storage-blob';
-import { from, Observable, ReplaySubject } from 'rxjs';
-import { combineAll, finalize, first, map, switchMap } from 'rxjs/operators';
+import { from, Observable, of, ReplaySubject } from 'rxjs';
+import {
+  combineAll,
+  finalize,
+  map,
+  switchMap,
+  tap,
+  withLatestFrom
+} from 'rxjs/operators';
+import { BlobStorageOptions } from './azure-storage/azureStorage';
 import { BlobStorageService } from './azure-storage/blob-storage.service.';
 
 interface IUploadProgress {
@@ -35,7 +43,11 @@ interface IUploadProgress {
     <div *ngIf="selectedContainer$ | async as container">
       <h2>Container: {{ container }} Files</h2>
       <hr />
-      <input type="file" multiple="multiple" (change)="onFileChange($event)" />
+      <input
+        type="file"
+        multiple="multiple"
+        (change)="onFileSelected($event)"
+      />
       <div *ngIf="uploadProgress$ | async as progress">
         <h2>Upload Progress</h2>
         <pre>{{ progress | json }}</pre>
@@ -70,28 +82,12 @@ export class AppComponent implements OnInit {
   constructor(private blobStorage: BlobStorageService) {}
 
   ngOnInit() {
-    this.containers$ = this.blobStorage.getContainers({
-      storageUri: 'stottleblobstorage',
-      storageAccessToken:
-        'sv=2019-02-02&ss=b&srt=sco&sp=rwdlac&se=2019-11-14T19:20:59Z&st=2019-11-01T11:20:59Z&spr=https&sig=dG1zvo67VNDrqeWlrcrlz78W2ONVbYn2FlGJeFDifGg%3D',
-      container: 'NOT NEEDED',
-      filename: 'NOT NEEDED'
-    });
-
-    this.filesInContainer$ = this.selectedContainer$.pipe(
-      switchMap(containerName =>
-        this.blobStorage.listBlobsInContainer({
-          storageUri: 'stottleblobstorage',
-          storageAccessToken:
-            'sv=2019-02-02&ss=b&srt=sco&sp=rwdlac&se=2019-11-14T19:20:59Z&st=2019-11-01T11:20:59Z&spr=https&sig=dG1zvo67VNDrqeWlrcrlz78W2ONVbYn2FlGJeFDifGg%3D',
-          container: containerName,
-          filename: 'NOT NEEDED'
-        })
-      )
+    this.containers$ = this.getStorageOptions().pipe(
+      switchMap(info => this.blobStorage.getContainers(info))
     );
   }
 
-  onFileChange(event: any): void {
+  onFileSelected(event: any): void {
     this.uploadProgress$ = from(event.target.files as FileList).pipe(
       map(file => this.uploadFile(file)),
       combineAll()
@@ -100,52 +96,57 @@ export class AppComponent implements OnInit {
 
   onContainerClick(containerName: string): void {
     this.selectedContainerInner$.next(containerName);
-  }
 
-  onFileClick(filename: string): void {
-    this.blobDeleteResponse$ = this.selectedContainer$.pipe(
-      first(),
-      switchMap(containerName =>
-        this.blobStorage
-          .deleteBlobItem({
-            storageUri: 'stottleblobstorage',
-            storageAccessToken:
-              'sv=2019-02-02&ss=b&srt=sco&sp=rwdlac&se=2019-11-14T19:20:59Z&st=2019-11-01T11:20:59Z&spr=https&sig=dG1zvo67VNDrqeWlrcrlz78W2ONVbYn2FlGJeFDifGg%3D',
-            container: containerName,
-            filename: filename
-          })
-          .pipe(
-            finalize(() => this.selectedContainerInner$.next(containerName))
-          )
+    this.filesInContainer$ = this.selectedContainer$.pipe(
+      withLatestFrom(this.getStorageOptions()),
+      switchMap(([container, info]) =>
+        this.blobStorage.listBlobsInContainer({ ...info, container })
       )
     );
   }
 
-  private uploadFile = (file: File) => {
-    return this.selectedContainer$.pipe(
-      first(),
-      switchMap(containerName =>
+  onFileClick(filename: string): void {
+    this.blobDeleteResponse$ = this.getStorageOptions().pipe(
+      withLatestFrom(this.selectedContainer$),
+      switchMap(([info, container]) =>
         this.blobStorage
-          .uploadToBlobStorage(
-            {
-              storageUri: 'stottleblobstorage',
-              storageAccessToken:
-                'sv=2019-02-02&ss=b&srt=sco&sp=rwdlac&se=2019-11-14T19:20:59Z&st=2019-11-01T11:20:59Z&spr=https&sig=dG1zvo67VNDrqeWlrcrlz78W2ONVbYn2FlGJeFDifGg%3D',
-              container: containerName,
-              filename: file.name // + new Date().getTime()
-            },
-            file
-          )
+          .deleteBlobItem({
+            ...info,
+            container,
+            filename
+          })
+          .pipe(tap(() => this.selectedContainerInner$.next(container)))
+      )
+    );
+  }
+
+  private uploadFile = (file: File) =>
+    this.getStorageOptions().pipe(
+      withLatestFrom(this.selectedContainer$),
+      switchMap(([info, container]) =>
+        this.blobStorage
+          .uploadToBlobStorage(file, {
+            ...info,
+            container,
+            filename: file.name // + new Date().getTime()
+          })
           .pipe(
             map(progress => ({
               filename: file.name,
               progress: parseInt(((progress / file.size) * 100).toString(), 10)
             })),
-            finalize(() => this.selectedContainerInner$.next(containerName))
+            finalize(() => this.selectedContainerInner$.next(container))
           )
       )
     );
-  };
+
+  private getStorageOptions(): Observable<BlobStorageOptions> {
+    return of({
+      storageUri: 'stottleblobstorage',
+      storageAccessToken:
+        'sv=2019-02-02&ss=b&srt=sco&sp=rwdlac&se=2019-11-14T19:20:59Z&st=2019-11-01T11:20:59Z&spr=https&sig=dG1zvo67VNDrqeWlrcrlz78W2ONVbYn2FlGJeFDifGg%3D'
+    });
+  }
 }
 
 // docker run -p 10000:10000 mcr.microsoft.com/azure-storage/azurite  azurite-blob --blobHost 0.0.0.0 --blobPort 10000
