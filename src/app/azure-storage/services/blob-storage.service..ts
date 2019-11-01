@@ -119,7 +119,7 @@ export class BlobStorageService {
       observer =>
         void (async () => {
           try {
-            for await (const item of iterable) {
+            for await (const item of iterable as AsyncIterable<T>) {
               if (observer.closed) return;
               observer.next(item);
             }
