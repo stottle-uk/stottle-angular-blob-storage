@@ -7,8 +7,8 @@ import { distinctUntilChanged, scan, startWith } from 'rxjs/operators';
 import {
   BlobContainerRequest,
   BlobFileRequest,
+  BlobStorageBuilder,
   BlobStorageOptions,
-  BlobStorageToken,
   BLOB_STORAGE_TOKEN
 } from './azureStorage';
 
@@ -18,7 +18,7 @@ import {
 export class BlobStorageService {
   constructor(
     @Inject(BLOB_STORAGE_TOKEN)
-    private getBlobClientFromConnectionString: BlobStorageToken
+    private getBlobClient: BlobStorageBuilder
   ) {}
 
   uploadToBlobStorage(
@@ -66,8 +66,8 @@ export class BlobStorageService {
     return containerClient;
   }
 
-  private buildClient(sasToken: BlobStorageOptions) {
-    return this.getBlobClientFromConnectionString(sasToken);
+  private buildClient(options: BlobStorageOptions) {
+    return this.getBlobClient(options);
   }
 
   private uploadFile(
@@ -77,7 +77,10 @@ export class BlobStorageService {
     return new Observable<number>(observer => {
       blockBlobClient
         .uploadBrowserData(file, {
-          onProgress: this.onProgress(observer)
+          onProgress: this.onProgress(observer),
+          blobHTTPHeaders: {
+            blobContentType: file.type
+          }
         })
         .then(
           this.onUploadComplete(observer, file),

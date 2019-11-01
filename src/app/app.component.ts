@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import {
   BlobDeleteResponse,
   BlobItem,
@@ -52,9 +53,12 @@ import { SasGeneratorService } from './azure-storage/services/sas-generator.serv
       <app-container-files-list
         [items]="filesInContainer$ | async"
         (onDeleteItem)="onDeleteItem($event)"
+        (onDownloadItem)="onDownloadItem($event)"
       ></app-container-files-list>
 
       <pre>{{ blobDeleteResponse$ | async | json }}</pre>
+
+      <a [href]="blobDownloadResponse$ | async">download</a>
     </app-selected-container>
   `,
   styles: []
@@ -64,6 +68,7 @@ export class AppComponent implements OnInit {
   containers$: Observable<ContainerItem[]>;
   filesInContainer$: Observable<BlobItem[]>;
   blobDeleteResponse$: Observable<BlobDeleteResponse>;
+  blobDownloadResponse$: Observable<SafeUrl>;
   selectedContainerInner$ = new BehaviorSubject<string>(undefined);
 
   get selectedContainer$() {
@@ -72,7 +77,8 @@ export class AppComponent implements OnInit {
 
   constructor(
     private sasGenerator: SasGeneratorService,
-    private blobStorage: BlobStorageService
+    private blobStorage: BlobStorageService,
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit() {
@@ -107,6 +113,28 @@ export class AppComponent implements OnInit {
             filename
           })
           .pipe(this.finaliseBlobChange(containerName))
+      )
+    );
+  }
+
+  onDownloadItem(filename: string): void {
+    this.blobDownloadResponse$ = this.getStorageOptions().pipe(
+      withLatestFrom(this.selectedContainer$),
+      switchMap(([info, containerName]) =>
+        this.blobStorage
+          .downloadBlobItem({
+            ...info,
+            containerName,
+            filename
+          })
+          .pipe(
+            switchMap(res =>
+              from(res.blobBody).pipe(
+                map(body => window.URL.createObjectURL(body)),
+                map(url => this.sanitizer.bypassSecurityTrustUrl(url))
+              )
+            )
+          )
       )
     );
   }

@@ -24,19 +24,19 @@ export interface BlobFileRequest extends BlobContainerRequest {
   filename: string;
 }
 
-export type BlobStorageToken = (
+export type BlobStorageBuilder = (
   options: BlobStorageOptions
 ) => BlobServiceClient;
 
-export const BLOB_STORAGE_TOKEN = new InjectionToken<BlobStorageToken>(
+export const BLOB_STORAGE_TOKEN = new InjectionToken<BlobStorageBuilder>(
   'BLOB_STORAGE_TOKEN'
 );
 
-export function azureBlobStorageFactory(): BlobStorageToken {
-  const buildConnectionString = (sasToken: BlobStorageOptions) => {
+export function azureBlobStorageFactory(): BlobStorageBuilder {
+  const buildConnectionString = (options: BlobStorageOptions) => {
     return (
-      `BlobEndpoint=https://${sasToken.storageUri}.blob.core.windows.net/;` +
-      `SharedAccessSignature=${sasToken.storageAccessToken}`
+      `BlobEndpoint=https://${options.storageUri}.blob.core.windows.net/;` +
+      `SharedAccessSignature=${options.storageAccessToken}`
     );
   };
 

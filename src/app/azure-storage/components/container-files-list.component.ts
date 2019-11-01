@@ -8,6 +8,7 @@ import { BlobItem } from '@azure/storage-blob';
       <div>
         {{ item.name }} | {{ item.properties.contentLength }} |
         {{ item.properties.lastModified }}
+        <button (click)="onDownloadItem.emit(item.name)">Download File</button>
         <button (click)="onDeleteClick(item.name)">Delete File</button>
       </div>
     </div>
@@ -17,6 +18,7 @@ import { BlobItem } from '@azure/storage-blob';
 export class ContainerFilesListComponent {
   @Input() items: BlobItem[];
   @Output() onDeleteItem = new EventEmitter<string>();
+  @Output() onDownloadItem = new EventEmitter<string>();
 
   onDeleteClick(itenName: string) {
     this.onDeleteItem.emit(itenName);
