@@ -5,9 +5,9 @@ import { BlobItem, BlockBlobClient, ContainerItem } from '@azure/storage-blob';
 import { from, Observable, Subscriber } from 'rxjs';
 import { distinctUntilChanged, scan, startWith } from 'rxjs/operators';
 import {
-  BlobConnectionString,
   BlobContainerListRequest,
   BlobStorageOptions,
+  BlobStorageToken,
   BlobUploadRequest,
   BLOB_STORAGE_TOKEN
 } from './azureStorage';
@@ -18,7 +18,7 @@ import {
 export class BlobStorageService {
   constructor(
     @Inject(BLOB_STORAGE_TOKEN)
-    private getBlobClientFromConnectionString: BlobConnectionString
+    private getBlobClientFromConnectionString: BlobStorageToken
   ) {}
 
   uploadToBlobStorage(
@@ -66,15 +66,7 @@ export class BlobStorageService {
   }
 
   private buildClient(sasToken: BlobStorageOptions) {
-    const connString = this.buildConnectionString(sasToken);
-    return this.getBlobClientFromConnectionString(connString);
-  }
-
-  private buildConnectionString(sasToken: BlobStorageOptions) {
-    return (
-      `BlobEndpoint=https://${sasToken.storageUri}.blob.core.windows.net/;` +
-      `SharedAccessSignature=${sasToken.storageAccessToken}`
-    );
+    return this.getBlobClientFromConnectionString(sasToken);
   }
 
   private uploadFile(

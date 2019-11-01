@@ -150,7 +150,3 @@ export class AppComponent implements OnInit {
     return this.sasGenerator.getSasToken();
   }
 }
-
-// docker run -p 10000:10000 mcr.microsoft.com/azure-storage/azurite  azurite-blob --blobHost 0.0.0.0 --blobPort 10000
-
-// BlobEndpoint=https://stottleblobstorage.blob.core.windows.net/;QueueEndpoint=https://stottleblobstorage.queue.core.windows.net/;FileEndpoint=https://stottleblobstorage.file.core.windows.net/;TableEndpoint=https://stottleblobstorage.table.core.windows.net/;SharedAccessSignature=sv=2019-02-02&ss=bfqt&srt=sco&sp=rwdlacup&se=2019-11-01T19:15:27Z&st=2019-11-01T11:15:27Z&spr=https&sig=6sYMMwpGAPM5%2Bdfo%2BwLqvkb9gbS5NocxNpTzqTIS%2FwU%3D

@@ -25,6 +25,22 @@ export interface BlobUploadRequest extends BlobStorageOptions {
   filename: string;
 }
 
-export const BLOB_STORAGE_TOKEN = new InjectionToken<BlobConnectionString>(
+export type BlobStorageToken = (
+  options: BlobStorageOptions
+) => BlobServiceClient;
+
+export const BLOB_STORAGE_TOKEN = new InjectionToken<BlobStorageToken>(
   'BLOB_STORAGE_TOKEN'
 );
+
+export function azureBlobStorageFactory(): BlobStorageToken {
+  const buildConnectionString = (sasToken: BlobStorageOptions) => {
+    return (
+      `BlobEndpoint=https://${sasToken.storageUri}.blob.core.windows.net/;` +
+      `SharedAccessSignature=${sasToken.storageAccessToken}`
+    );
+  };
+
+  return options =>
+    BlobServiceClient.fromConnectionString(buildConnectionString(options));
+}
