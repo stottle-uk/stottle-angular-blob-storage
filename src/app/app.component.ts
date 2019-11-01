@@ -13,9 +13,9 @@ import {
   tap,
   withLatestFrom
 } from 'rxjs/operators';
-import { BlobStorageOptions } from './azure-storage/azureStorage';
-import { BlobStorageService } from './azure-storage/blob-storage.service.';
-import { SasGeneratorService } from './azure-storage/sas-generator.service';
+import { BlobStorageOptions } from './azure-storage/services/azureStorage';
+import { BlobStorageService } from './azure-storage/services/blob-storage.service.';
+import { SasGeneratorService } from './azure-storage/services/sas-generator.service';
 
 interface IUploadProgress {
   filename: string;

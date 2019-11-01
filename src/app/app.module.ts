@@ -5,7 +5,7 @@ import { AppComponent } from './app.component';
 import {
   BlobConnectionString,
   BLOB_STORAGE_TOKEN
-} from './azure-storage/azureStorage';
+} from './azure-storage/services/azureStorage';
 
 export function azureBlobStorageFactory(): BlobConnectionString {
   return BlobServiceClient.fromConnectionString;
