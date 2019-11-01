@@ -81,10 +81,13 @@ export class AppComponent implements OnInit {
     );
 
     this.filesInContainer$ = this.selectedContainer$.pipe(
-      filter(container => !!container),
+      filter(containerName => !!containerName),
       withLatestFrom(this.getStorageOptions()),
-      switchMap(([container, info]) =>
-        this.blobStorage.listBlobsInContainer({ ...info, container })
+      switchMap(([containerName, info]) =>
+        this.blobStorage.listBlobsInContainer({
+          ...info,
+          containerName
+        })
       )
     );
   }
@@ -96,14 +99,14 @@ export class AppComponent implements OnInit {
   onDeleteItem(filename: string): void {
     this.blobDeleteResponse$ = this.getStorageOptions().pipe(
       withLatestFrom(this.selectedContainer$),
-      switchMap(([info, container]) =>
+      switchMap(([info, containerName]) =>
         this.blobStorage
           .deleteBlobItem({
             ...info,
-            container,
+            containerName,
             filename
           })
-          .pipe(this.finaliseBlobChange(container))
+          .pipe(this.finaliseBlobChange(containerName))
       )
     );
   }
@@ -118,11 +121,11 @@ export class AppComponent implements OnInit {
   private uploadFile = (file: File) =>
     this.getStorageOptions().pipe(
       withLatestFrom(this.selectedContainer$),
-      switchMap(([info, container]) =>
+      switchMap(([info, containerName]) =>
         this.blobStorage
           .uploadToBlobStorage(file, {
             ...info,
-            container,
+            containerName,
             filename: file.name + new Date().getTime()
           })
           .pipe(
@@ -130,19 +133,19 @@ export class AppComponent implements OnInit {
               filename: file.name,
               progress: parseInt(((progress / file.size) * 100).toString(), 10)
             })),
-            this.finaliseBlobChange(container)
+            this.finaliseBlobChange(containerName)
           )
       )
     );
 
   private finaliseBlobChange = <T>(
-    container: string
+    containerName: string
   ): MonoTypeOperatorFunction<T> => source =>
     source.pipe(
       finalize(
         () =>
-          this.selectedContainerInner$.value === container &&
-          this.selectedContainerInner$.next(container)
+          this.selectedContainerInner$.value === containerName &&
+          this.selectedContainerInner$.next(containerName)
       )
     );
 

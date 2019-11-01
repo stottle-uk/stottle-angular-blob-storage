@@ -16,12 +16,11 @@ export interface BlobStorageOptions {
   storageAccessToken: string;
 }
 
-export interface BlobContainerListRequest extends BlobStorageOptions {
-  container: string;
+export interface BlobContainerRequest extends BlobStorageOptions {
+  containerName: string;
 }
 
-export interface BlobUploadRequest extends BlobStorageOptions {
-  container: string;
+export interface BlobFileRequest extends BlobContainerRequest {
   filename: string;
 }
 

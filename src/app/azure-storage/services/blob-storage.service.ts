@@ -5,10 +5,10 @@ import { BlobItem, BlockBlobClient, ContainerItem } from '@azure/storage-blob';
 import { from, Observable, Subscriber } from 'rxjs';
 import { distinctUntilChanged, scan, startWith } from 'rxjs/operators';
 import {
-  BlobContainerListRequest,
+  BlobContainerRequest,
+  BlobFileRequest,
   BlobStorageOptions,
   BlobStorageToken,
-  BlobUploadRequest,
   BLOB_STORAGE_TOKEN
 } from './azureStorage';
 
@@ -23,16 +23,9 @@ export class BlobStorageService {
 
   uploadToBlobStorage(
     file: File,
-    request: BlobUploadRequest
+    request: BlobFileRequest
   ): Observable<number> {
-    const blobServiceClient = this.buildClient(request);
-    const containerClient = blobServiceClient.getContainerClient(
-      request.container
-    );
-    const blockBlobClient = containerClient.getBlockBlobClient(
-      request.filename
-    );
-
+    const blockBlobClient = this.getBlockBlobClient(request);
     return this.uploadFile(blockBlobClient, file);
   }
 
@@ -43,26 +36,34 @@ export class BlobStorageService {
     );
   }
 
-  listBlobsInContainer(request: BlobContainerListRequest) {
-    const blobServiceClient = this.buildClient(request);
-    const containerClient = blobServiceClient.getContainerClient(
-      request.container
-    );
+  listBlobsInContainer(request: BlobContainerRequest) {
+    const containerClient = this.getContainerClient(request);
     return this.asyncToObservable(containerClient.listBlobsFlat()).pipe(
       scan<BlobItem>((items, item) => [...items, item], [])
     );
   }
 
-  deleteBlobItem(request: BlobUploadRequest) {
+  downloadBlobItem(request: BlobFileRequest) {
+    const blockBlobClient = this.getBlockBlobClient(request);
+    return from(blockBlobClient.download());
+  }
+
+  deleteBlobItem(request: BlobFileRequest) {
+    const blockBlobClient = this.getBlockBlobClient(request);
+    return from(blockBlobClient.delete());
+  }
+
+  private getBlockBlobClient(request: BlobFileRequest) {
+    const containerClient = this.getContainerClient(request);
+    return containerClient.getBlockBlobClient(request.filename);
+  }
+
+  private getContainerClient(request: BlobContainerRequest) {
     const blobServiceClient = this.buildClient(request);
     const containerClient = blobServiceClient.getContainerClient(
-      request.container
+      request.containerName
     );
-    const blockBlobClient = containerClient.getBlockBlobClient(
-      request.filename
-    );
-
-    return from(blockBlobClient.delete());
+    return containerClient;
   }
 
   private buildClient(sasToken: BlobStorageOptions) {
