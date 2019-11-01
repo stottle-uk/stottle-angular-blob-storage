@@ -42,10 +42,10 @@ import { SasGeneratorService } from './azure-storage/services/sas-generator.serv
     <hr />
 
     <app-selected-container [containerName]="selectedContainer$ | async">
-      <app-file-uploader
+      <app-input-file
         [uploadProgress]="uploadProgress$ | async"
         (onFilesSelected)="onFileSelected($event)"
-      ></app-file-uploader>
+      ></app-input-file>
 
       <hr />
 

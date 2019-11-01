@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { BlobUploadProgress } from '../services/azureStorage';
 
 @Component({
-  selector: 'app-file-uploader',
+  selector: 'app-input-file',
   template: `
     <input type="file" multiple="multiple" (change)="onSelected($event)" />
     <div *ngIf="isUploadInProgress">
@@ -12,7 +12,7 @@ import { BlobUploadProgress } from '../services/azureStorage';
   `,
   styles: []
 })
-export class FileUploaderComponent {
+export class InputFileComponent {
   @Input() uploadProgress: BlobUploadProgress[];
   @Output() onFilesSelected = new EventEmitter<FileList>();
 
