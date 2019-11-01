@@ -22,7 +22,7 @@ import {
   BlobStorageOptions,
   BlobUploadProgress
 } from './azure-storage/services/azureStorage';
-import { BlobStorageService } from './azure-storage/services/blob-storage.service.';
+import { BlobStorageService } from './azure-storage/services/blob-storage.service';
 import { SasGeneratorService } from './azure-storage/services/sas-generator.service';
 
 @Component({
