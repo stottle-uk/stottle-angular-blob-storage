@@ -60,10 +60,7 @@ export class BlobStorageService {
 
   private getContainerClient(request: BlobContainerRequest) {
     const blobServiceClient = this.buildClient(request);
-    const containerClient = blobServiceClient.getContainerClient(
-      request.containerName
-    );
-    return containerClient;
+    return blobServiceClient.getContainerClient(request.containerName);
   }
 
   private buildClient(options: BlobStorageOptions) {
