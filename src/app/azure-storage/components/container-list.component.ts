@@ -7,9 +7,8 @@ import { ContainerItem } from '@azure/storage-blob';
     <h2>Containers</h2>
 
     <div *ngFor="let container of containers">
-      <div (click)="onClick(container.name)">
-        {{ container.name }}
-      </div>
+      {{ container.name }}
+      <button (click)="onClick(container.name)">View</button>
     </div>
   `,
   styles: []

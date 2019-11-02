@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@angular/core';
 import { TransferProgressEvent } from '@azure/core-http';
 import { PagedAsyncIterableIterator } from '@azure/core-paging';
-import { BlobItem, BlockBlobClient, ContainerItem } from '@azure/storage-blob';
+import { BlockBlobClient, ContainerItem } from '@azure/storage-blob';
 import { from, Observable, Subscriber } from 'rxjs';
 import { distinctUntilChanged, scan, startWith } from 'rxjs/operators';
 import {
@@ -21,26 +21,14 @@ export class BlobStorageService {
     private getBlobClient: BlobStorageBuilder
   ) {}
 
-  uploadToBlobStorage(
-    file: File,
-    request: BlobFileRequest
-  ): Observable<number> {
-    const blockBlobClient = this.getBlockBlobClient(request);
-    return this.uploadFile(blockBlobClient, file);
-  }
-
   getContainers(request: BlobStorageOptions): Observable<ContainerItem[]> {
     const blobServiceClient = this.buildClient(request);
-    return this.asyncToObservable(blobServiceClient.listContainers()).pipe(
-      scan<ContainerItem>((items, item) => [...items, item], [])
-    );
+    return this.asyncToObservable(blobServiceClient.listContainers());
   }
 
   listBlobsInContainer(request: BlobContainerRequest) {
     const containerClient = this.getContainerClient(request);
-    return this.asyncToObservable(containerClient.listBlobsFlat()).pipe(
-      scan<BlobItem>((items, item) => [...items, item], [])
-    );
+    return this.asyncToObservable(containerClient.listBlobsFlat());
   }
 
   downloadBlobItem(request: BlobFileRequest) {
@@ -51,6 +39,14 @@ export class BlobStorageService {
   deleteBlobItem(request: BlobFileRequest) {
     const blockBlobClient = this.getBlockBlobClient(request);
     return from(blockBlobClient.delete());
+  }
+
+  uploadToBlobStorage(
+    file: File,
+    request: BlobFileRequest
+  ): Observable<number> {
+    const blockBlobClient = this.getBlockBlobClient(request);
+    return this.uploadFile(blockBlobClient, file);
   }
 
   private getBlockBlobClient(request: BlobFileRequest) {
@@ -121,6 +117,6 @@ export class BlobStorageService {
             observer.error(e);
           }
         })()
-    );
+    ).pipe(scan<T>((items, item) => [...items, item], []));
   }
 }
