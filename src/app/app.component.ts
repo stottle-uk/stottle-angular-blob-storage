@@ -83,15 +83,15 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.containers$ = this.getStorageOptions().pipe(
-      switchMap(info => this.blobStorage.getContainers(info))
+      switchMap(options => this.blobStorage.getContainers(options))
     );
 
     this.filesInContainer$ = this.selectedContainer$.pipe(
       filter(containerName => !!containerName),
       withLatestFrom(this.getStorageOptions()),
-      switchMap(([containerName, info]) =>
+      switchMap(([containerName, options]) =>
         this.blobStorage.listBlobsInContainer({
-          ...info,
+          ...options,
           containerName
         })
       )
@@ -105,10 +105,10 @@ export class AppComponent implements OnInit {
   onDeleteItem(filename: string): void {
     this.blobDeleteResponse$ = this.getStorageOptions().pipe(
       withLatestFrom(this.selectedContainer$),
-      switchMap(([info, containerName]) =>
+      switchMap(([options, containerName]) =>
         this.blobStorage
           .deleteBlobItem({
-            ...info,
+            ...options,
             containerName,
             filename
           })
@@ -120,10 +120,10 @@ export class AppComponent implements OnInit {
   onDownloadItem(filename: string): void {
     this.blobDownloadResponse$ = this.getStorageOptions().pipe(
       withLatestFrom(this.selectedContainer$),
-      switchMap(([info, containerName]) =>
+      switchMap(([options, containerName]) =>
         this.blobStorage
           .downloadBlobItem({
-            ...info,
+            ...options,
             containerName,
             filename
           })
@@ -149,10 +149,10 @@ export class AppComponent implements OnInit {
   private uploadFile = (file: File) =>
     this.getStorageOptions().pipe(
       withLatestFrom(this.selectedContainer$),
-      switchMap(([info, containerName]) =>
+      switchMap(([options, containerName]) =>
         this.blobStorage
           .uploadToBlobStorage(file, {
-            ...info,
+            ...options,
             containerName,
             filename: file.name + new Date().getTime()
           })
