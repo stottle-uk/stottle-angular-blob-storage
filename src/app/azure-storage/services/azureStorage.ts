@@ -4,6 +4,13 @@ import { BlobServiceClient, StoragePipelineOptions } from '@azure/storage-blob';
 export interface BlobUploadProgress {
   filename: string;
   progress: number;
+  container: string;
+}
+
+export interface BlobDownload {
+  filename: string;
+  url: string;
+  containerName: string;
 }
 
 export type BlobConnectionString = (
@@ -23,6 +30,8 @@ export interface BlobContainerRequest extends BlobStorageOptions {
 export interface BlobFileRequest extends BlobContainerRequest {
   filename: string;
 }
+
+export type UploadDictionary = { [key: string]: BlobUploadProgress };
 
 export type BlobStorageBuilder = (
   options: BlobStorageOptions
