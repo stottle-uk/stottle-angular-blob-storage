@@ -4,11 +4,11 @@ import { BlobStateService } from '../services/blob-state.service';
 @Component({
   selector: 'app-selected-container',
   template: `
-    <div *ngIf="selectedContainer$ | async as containerName">
-      <h2>Container: {{ containerName }} Files</h2>
+    <ng-container *ngIf="selectedContainer$ | async as containerName">
+      <h2>Container Files: {{ containerName }}</h2>
 
       <ng-content></ng-content>
-    </div>
+    </ng-container>
   `
 })
 export class SelectedContainerComponent {

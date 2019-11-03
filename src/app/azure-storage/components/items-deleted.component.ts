@@ -4,7 +4,10 @@ import { BlobStateService } from '../services/blob-state.service';
 @Component({
   selector: 'app-items-deleted',
   template: `
-    <div *ngFor="let item of deletedItems$ | async">{{ item | json }}:</div>
+    <h3>Deleted</h3>
+    <div *ngFor="let item of deletedItems$ | async">
+      <pre> {{ item | json }}</pre>
+    </div>
   `
 })
 export class ItemsDeletedComponent {

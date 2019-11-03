@@ -4,6 +4,7 @@ import { BlobStateService } from '../services/blob-state.service';
 @Component({
   selector: 'app-items-downloaded',
   template: `
+    <h3>Downloads</h3>
     <div *ngFor="let download of downloads$ | async">
       {{ download.containerName }}:
       <a [href]="download.url" target="_blank">

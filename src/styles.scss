@@ -1,1 +1,41 @@
 /* You can add global styles to this file, and also import other style files */
+
+.container {
+  display: flex;
+  flex-flow: row wrap;
+
+  h2 {
+    flex: 70% 0;
+    width: 100%;
+  }
+
+  .input-file {
+    flex: 30% 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .items-list {
+    flex: 70% 0;
+  }
+
+  .item-details {
+    flex: 30% 0;
+    display: flex;
+    flex-flow: column nowrap;
+    width: 100%;
+    overflow: hidden;
+
+    .items-uploaded {
+      width: 100%;
+    }
+
+    .items-downloaded {
+      width: 100%;
+    }
+
+    .items-deleted {
+      width: 100%;
+    }
+  }
+}
