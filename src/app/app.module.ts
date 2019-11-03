@@ -1,13 +1,13 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
-import { ContainerItemsListComponent } from './azure-storage/components/container-items-list.component';
 import { ContainerListComponent } from './azure-storage/components/container-list.component';
-import { DeletedItemsComponent } from './azure-storage/components/deleted-items.component';
-import { DownloadsComponent } from './azure-storage/components/downloads.component';
 import { InputFileComponent } from './azure-storage/components/input-file.component';
+import { ItemsDeletedComponent } from './azure-storage/components/items-deleted.component';
+import { ItemsDownloadedComponent } from './azure-storage/components/items-downloaded.component';
+import { ItemsListComponent } from './azure-storage/components/items-list.component';
+import { ItemsUploadedComponent } from './azure-storage/components/items-uploaded.component';
 import { SelectedContainerComponent } from './azure-storage/components/selected-container.component';
-import { UploadsComponent } from './azure-storage/components/uploads.component';
 import {
   azureBlobStorageFactory,
   BLOB_STORAGE_TOKEN
@@ -17,12 +17,12 @@ import {
   declarations: [
     AppComponent,
     ContainerListComponent,
-    ContainerItemsListComponent,
+    ItemsListComponent,
     SelectedContainerComponent,
     InputFileComponent,
-    DownloadsComponent,
-    UploadsComponent,
-    DeletedItemsComponent
+    ItemsDownloadedComponent,
+    ItemsUploadedComponent,
+    ItemsDeletedComponent
   ],
   imports: [BrowserModule],
   providers: [

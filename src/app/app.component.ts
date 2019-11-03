@@ -16,13 +16,13 @@ import { Component } from '@angular/core';
     <app-selected-container>
       <app-input-file></app-input-file>
 
-      <app-container-items-list></app-container-items-list>
+      <app-items-list></app-items-list>
 
-      <app-uploads></app-uploads>
+      <app-items-uploaded></app-items-uploaded>
 
-      <app-downloads></app-downloads>
+      <app-items-downloaded></app-items-downloaded>
 
-      <app-deleted-items></app-deleted-items>
+      <app-items-deleted></app-items-deleted>
     </app-selected-container>
   `
 })
