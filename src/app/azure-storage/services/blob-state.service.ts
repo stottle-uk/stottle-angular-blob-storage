@@ -44,7 +44,6 @@ export class BlobStateService {
 
   containers$ = this.getStorageOptions().pipe(
     switchMap(options => this.blobStorage.getContainers(options))
-    // tap(con => this.selectedContainerInner$.next(con[0].name))
   );
   itemsInContainer$ = this.selectedContainer$.pipe(
     filter(containerName => !!containerName),

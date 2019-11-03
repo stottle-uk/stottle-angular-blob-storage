@@ -7,9 +7,9 @@ import { BlobStateService } from '../services/blob-state.service';
     <div *ngFor="let item of items$ | async">
       <div>
         {{ item.name }} | {{ item.properties.contentLength }} |
-        {{ item.properties.lastModified }}
-        <button (click)="onDownloadClick(item.name)">Download File</button>
-        <button (click)="onDeleteClick(item.name)">Delete File</button>
+        {{ item.properties.lastModified | date: 'short' }}
+        <button (click)="onDownloadClick(item.name)">Download</button>
+        <button (click)="onDeleteClick(item.name)">Delete</button>
       </div>
     </div>
   `
