@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { BlobStateService } from '../services/blob-state.service';
 
 @Component({
-  selector: 'app-container-files-list',
+  selector: 'app-container-items-list',
   template: `
     <div *ngFor="let item of items$ | async">
       <div>
@@ -14,7 +14,7 @@ import { BlobStateService } from '../services/blob-state.service';
     </div>
   `
 })
-export class ContainerFilesListComponent {
+export class ContainerItemsListComponent {
   items$ = this.blobState.itemsInContainer$;
 
   constructor(private blobState: BlobStateService) {}

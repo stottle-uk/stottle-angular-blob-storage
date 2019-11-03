@@ -16,9 +16,7 @@ import { Component } from '@angular/core';
     <app-selected-container>
       <app-input-file></app-input-file>
 
-      <hr />
-
-      <app-container-files-list></app-container-files-list>
+      <app-container-items-list></app-container-items-list>
 
       <app-uploads></app-uploads>
 
