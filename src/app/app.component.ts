@@ -10,10 +10,7 @@ import { BlobStateService } from './azure-storage/services/blob-state.service';
       </h1>
     </div>
 
-    <app-container-list
-      [containers]="containers$ | async"
-      (onContainerClick)="onContainerClick($event)"
-    ></app-container-list>
+    <app-container-list></app-container-list>
 
     <hr />
 
@@ -43,7 +40,6 @@ import { BlobStateService } from './azure-storage/services/blob-state.service';
   styles: []
 })
 export class AppComponent {
-  containers$ = this.blobState.containers$;
   filesInContainer$ = this.blobState.filesInContainer$;
   blobUploadProgress$ = this.blobState.blobUploadProgress$;
   blobDownloadResponse$ = this.blobState.blobDownloadResponse$;
@@ -51,10 +47,6 @@ export class AppComponent {
   selectedContainer$ = this.blobState.selectedContainer$;
 
   constructor(private blobState: BlobStateService) {}
-
-  onContainerClick(containerName: string): void {
-    this.blobState.onContainerClick(containerName);
-  }
 
   onDeleteItem(filename: string): void {
     this.blobState.onDeleteItem(filename);

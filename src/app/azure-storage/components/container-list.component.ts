@@ -1,12 +1,12 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { ContainerItem } from '@azure/storage-blob';
+import { Component } from '@angular/core';
+import { BlobStateService } from '../services/blob-state.service';
 
 @Component({
   selector: 'app-container-list',
   template: `
     <h2>Containers</h2>
 
-    <div *ngFor="let container of containers">
+    <div *ngFor="let container of containers$ | async">
       {{ container.name }}
       <button (click)="onClick(container.name)">View</button>
     </div>
@@ -14,10 +14,11 @@ import { ContainerItem } from '@azure/storage-blob';
   styles: []
 })
 export class ContainerListComponent {
-  @Input() containers: ContainerItem[];
-  @Output() onContainerClick = new EventEmitter<string>();
+  containers$ = this.blobState.containers$;
+
+  constructor(private blobState: BlobStateService) {}
 
   onClick(containerName: string): void {
-    this.onContainerClick.emit(containerName);
+    this.blobState.onContainerClick(containerName);
   }
 }
