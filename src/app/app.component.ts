@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { BlobStateService } from './azure-storage/services/blob-state.service';
 
 @Component({
   selector: 'app-root',
@@ -15,30 +14,18 @@ import { BlobStateService } from './azure-storage/services/blob-state.service';
     <hr />
 
     <app-selected-container>
-      <app-input-file
-        [uploadProgress]="blobUploadProgress$ | async"
-      ></app-input-file>
+      <app-input-file></app-input-file>
 
       <hr />
 
       <app-container-files-list></app-container-files-list>
 
-      <pre>{{ blobDeleteResponse$ | async | json }}</pre>
+      <app-uploads></app-uploads>
 
-      <div *ngFor="let response of blobDownloadResponse$ | async">
-        <a [href]="response.url" target="_blank">
-          {{ response.filename }} -- {{ response.containerName }}
-        </a>
-      </div>
+      <app-downloads></app-downloads>
+
+      <app-deleted-items></app-deleted-items>
     </app-selected-container>
-  `,
-  styles: []
+  `
 })
-export class AppComponent {
-  blobUploadProgress$ = this.blobState.blobUploadProgress$;
-  blobDownloadResponse$ = this.blobState.blobDownloadResponse$;
-  blobDeleteResponse$ = this.blobState.blobDeleteResponse$;
-  selectedContainer$ = this.blobState.selectedContainer$;
-
-  constructor(private blobState: BlobStateService) {}
-}
+export class AppComponent {}

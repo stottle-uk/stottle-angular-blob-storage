@@ -9,6 +9,9 @@ import {
   azureBlobStorageFactory,
   BLOB_STORAGE_TOKEN
 } from './azure-storage/services/token';
+import { DownloadsComponent } from './azure-storage/components/downloads.component';
+import { UploadsComponent } from './azure-storage/components/uploads.component';
+import { DeletedItemsComponent } from './azure-storage/components/deleted-items.component';
 
 @NgModule({
   declarations: [
@@ -16,7 +19,10 @@ import {
     ContainerListComponent,
     ContainerFilesListComponent,
     SelectedContainerComponent,
-    InputFileComponent
+    InputFileComponent,
+    DownloadsComponent,
+    UploadsComponent,
+    DeletedItemsComponent
   ],
   imports: [BrowserModule],
   providers: [

@@ -9,8 +9,7 @@ import { BlobStateService } from '../services/blob-state.service';
 
       <ng-content></ng-content>
     </div>
-  `,
-  styles: []
+  `
 })
 export class SelectedContainerComponent {
   selectedContainer$ = this.blobState.selectedContainer$;

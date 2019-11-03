@@ -55,15 +55,15 @@ export class BlobStateService {
       })
     )
   );
-  blobUploadProgress$ = this.uploadQueue$.pipe(
+  uploadedItems$ = this.uploadQueue$.pipe(
     mergeMap(file => this.uploadFile(file)),
     this.scanEntries()
   );
-  blobDownloadResponse$ = this.downloadQueue$.pipe(
+  downloadedItems$ = this.downloadQueue$.pipe(
     mergeMap(filename => this.downloadFile(filename)),
     this.scanEntries()
   );
-  blobDeleteResponse$ = this.deleteQueue$.pipe(
+  deletedItems$ = this.deleteQueue$.pipe(
     mergeMap(filename => this.deleteFile(filename)),
     this.scanEntries()
   );
@@ -117,7 +117,7 @@ export class BlobStateService {
             filename
           })
           .pipe(
-            this.getDownloadUrlFromReponse(),
+            this.getDownloadUrlFromResponse(),
             this.mapDownloadResponse(filename, options)
           )
       )
@@ -213,7 +213,7 @@ export class BlobStateService {
       })
     );
 
-  private getDownloadUrlFromReponse = (): OperatorFunction<
+  private getDownloadUrlFromResponse = (): OperatorFunction<
     BlobDownloadResponseModel,
     string
   > => source =>

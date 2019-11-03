@@ -12,8 +12,7 @@ import { BlobStateService } from '../services/blob-state.service';
         <button (click)="onDeleteClick(item.name)">Delete File</button>
       </div>
     </div>
-  `,
-  styles: []
+  `
 })
 export class ContainerFilesListComponent {
   items$ = this.blobState.itemsInContainer$;

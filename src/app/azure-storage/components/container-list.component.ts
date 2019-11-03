@@ -10,8 +10,7 @@ import { BlobStateService } from '../services/blob-state.service';
       {{ container.name }}
       <button (click)="onClick(container.name)">View</button>
     </div>
-  `,
-  styles: []
+  `
 })
 export class ContainerListComponent {
   containers$ = this.blobState.containers$;
