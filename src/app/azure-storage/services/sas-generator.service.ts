@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { BlobStorageOptions } from './azureStorage';
+import { BlobStorageRequest } from '../types/azure-storage';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SasGeneratorService {
-  getSasToken(): Observable<BlobStorageOptions> {
+  getSasToken(): Observable<BlobStorageRequest> {
     return of({
       storageUri: 'stottleblobstorage',
       storageAccessToken:

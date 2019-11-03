@@ -8,7 +8,7 @@ import { SelectedContainerComponent } from './azure-storage/components/selected-
 import {
   azureBlobStorageFactory,
   BLOB_STORAGE_TOKEN
-} from './azure-storage/services/azureStorage';
+} from './azure-storage/services/token';
 
 @NgModule({
   declarations: [

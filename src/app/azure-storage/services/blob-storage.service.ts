@@ -7,10 +7,10 @@ import { distinctUntilChanged, scan, startWith } from 'rxjs/operators';
 import {
   BlobContainerRequest,
   BlobFileRequest,
-  BlobStorageBuilder,
-  BlobStorageOptions,
-  BLOB_STORAGE_TOKEN
-} from './azureStorage';
+  BlobStorageClientFactory,
+  BlobStorageRequest
+} from '../types/azure-storage';
+import { BLOB_STORAGE_TOKEN } from './token';
 
 @Injectable({
   providedIn: 'root'
@@ -18,10 +18,10 @@ import {
 export class BlobStorageService {
   constructor(
     @Inject(BLOB_STORAGE_TOKEN)
-    private getBlobClient: BlobStorageBuilder
+    private getBlobClient: BlobStorageClientFactory
   ) {}
 
-  getContainers(request: BlobStorageOptions): Observable<ContainerItem[]> {
+  getContainers(request: BlobStorageRequest): Observable<ContainerItem[]> {
     const blobServiceClient = this.buildClient(request);
     return this.asyncToObservable(blobServiceClient.listContainers());
   }
@@ -59,7 +59,7 @@ export class BlobStorageService {
     return blobServiceClient.getContainerClient(request.containerName);
   }
 
-  private buildClient(options: BlobStorageOptions) {
+  private buildClient(options: BlobStorageRequest) {
     return this.getBlobClient(options);
   }
 

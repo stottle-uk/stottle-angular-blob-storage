@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { BlobItemUpload } from '../services/azureStorage';
+import { BlobItemUpload } from '../types/azure-storage';
 
 @Component({
   selector: 'app-input-file',
