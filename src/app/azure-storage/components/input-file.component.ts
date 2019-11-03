@@ -1,10 +1,15 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { BlobStateService } from '../services/blob-state.service';
 import { BlobItemUpload } from '../types/azure-storage';
 
 @Component({
   selector: 'app-input-file',
   template: `
-    <input type="file" multiple="multiple" (change)="onSelected($event)" />
+    <input
+      type="file"
+      multiple="multiple"
+      (change)="onSelected($event.target.files)"
+    />
     <div *ngIf="isUploadInProgress">
       <h2>Upload Progress</h2>
       <pre>{{ uploadProgress | json }}</pre>
@@ -14,13 +19,14 @@ import { BlobItemUpload } from '../types/azure-storage';
 })
 export class InputFileComponent {
   @Input() uploadProgress: BlobItemUpload[];
-  @Output() onFilesSelected = new EventEmitter<FileList>();
 
   get isUploadInProgress() {
     return (this.uploadProgress || []).some(up => up.progress < 100);
   }
 
-  onSelected(event: any) {
-    this.onFilesSelected.emit(event.target.files as FileList);
+  constructor(private blobState: BlobStateService) {}
+
+  onSelected(files: FileList): void {
+    this.blobState.uploadItems(files);
   }
 }

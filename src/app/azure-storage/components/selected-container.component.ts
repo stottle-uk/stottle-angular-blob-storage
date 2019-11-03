@@ -1,9 +1,10 @@
-import { Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
+import { BlobStateService } from '../services/blob-state.service';
 
 @Component({
   selector: 'app-selected-container',
   template: `
-    <div *ngIf="containerName">
+    <div *ngIf="selectedContainer$ | async as containerName">
       <h2>Container: {{ containerName }} Files</h2>
 
       <ng-content></ng-content>
@@ -12,5 +13,7 @@ import { Component, Input } from '@angular/core';
   styles: []
 })
 export class SelectedContainerComponent {
-  @Input() containerName: string;
+  selectedContainer$ = this.blobState.selectedContainer$;
+
+  constructor(private blobState: BlobStateService) {}
 }

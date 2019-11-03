@@ -14,10 +14,9 @@ import { BlobStateService } from './azure-storage/services/blob-state.service';
 
     <hr />
 
-    <app-selected-container [containerName]="selectedContainer$ | async">
+    <app-selected-container>
       <app-input-file
         [uploadProgress]="blobUploadProgress$ | async"
-        (onFilesSelected)="onFileSelected($event)"
       ></app-input-file>
 
       <hr />
@@ -42,16 +41,4 @@ export class AppComponent {
   selectedContainer$ = this.blobState.selectedContainer$;
 
   constructor(private blobState: BlobStateService) {}
-
-  onDeleteItem(filename: string): void {
-    this.blobState.deleteItem(filename);
-  }
-
-  onDownloadItem(filename: string): void {
-    this.blobState.downloadItem(filename);
-  }
-
-  onFileSelected(files: FileList): void {
-    this.blobState.uploadItems(files);
-  }
 }
