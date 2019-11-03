@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import {
   BlobDeleteResponse,
@@ -22,16 +22,16 @@ import {
   switchMap,
   withLatestFrom
 } from 'rxjs/operators';
+import { BlobStorageService } from './azure-storage/services/blob-storage.service';
+import { SasGeneratorService } from './azure-storage/services/sas-generator.service';
 import {
   BlobContainerRequest,
   BlobItem,
   BlobItemDownload,
   BlobItemUpload,
-  BlobStorageOptions,
+  BlobStorageRequest,
   Dictionary
-} from './azure-storage/services/azureStorage';
-import { BlobStorageService } from './azure-storage/services/blob-storage.service';
-import { SasGeneratorService } from './azure-storage/services/sas-generator.service';
+} from './azure-storage/types/azure-storage';
 
 @Component({
   selector: 'app-root',
@@ -74,11 +74,11 @@ import { SasGeneratorService } from './azure-storage/services/sas-generator.serv
   `,
   styles: []
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   selectedContainerInner$ = new BehaviorSubject<string>(undefined);
   uploadQueueInner$ = new Subject<FileList>();
   downloadQueueInner$ = new Subject<string>();
-  blobDeleteResponse$: Observable<BlobDeleteResponse>;
+  deleteQueueInner$ = new Subject<string>();
 
   containers$ = this.getStorageOptions().pipe(
     switchMap(options => this.blobStorage.getContainers(options))
@@ -101,6 +101,10 @@ export class AppComponent implements OnInit {
     mergeMap(filename => this.downloadFile(filename)),
     this.scanEntries()
   );
+  blobDeleteResponse$ = this.deleteQueue$.pipe(
+    mergeMap(filename => this.deleteFile(filename)),
+    this.scanEntries()
+  );
 
   get selectedContainer$() {
     return this.selectedContainerInner$.asObservable();
@@ -108,6 +112,10 @@ export class AppComponent implements OnInit {
 
   get downloadQueue$() {
     return this.downloadQueueInner$.asObservable();
+  }
+
+  get deleteQueue$() {
+    return this.deleteQueueInner$.asObservable();
   }
 
   get uploadQueue$() {
@@ -122,25 +130,12 @@ export class AppComponent implements OnInit {
     private sanitizer: DomSanitizer
   ) {}
 
-  ngOnInit() {}
-
   onContainerClick(containerName: string): void {
     this.selectedContainerInner$.next(containerName);
   }
 
   onDeleteItem(filename: string): void {
-    this.blobDeleteResponse$ = this.getStorageOptions().pipe(
-      withLatestFrom(this.selectedContainer$),
-      switchMap(([options, containerName]) =>
-        this.blobStorage
-          .deleteBlobItem({
-            ...options,
-            containerName,
-            filename
-          })
-          .pipe(this.finaliseBlobChange(containerName))
-      )
-    );
+    this.deleteQueueInner$.next(filename);
   }
 
   onDownloadItem(filename: string): void {
@@ -151,7 +146,7 @@ export class AppComponent implements OnInit {
     this.uploadQueueInner$.next(files);
   }
 
-  downloadFile = (filename: string) =>
+  private downloadFile = (filename: string) =>
     this.getStorageOptionsWithContainer().pipe(
       switchMap(options =>
         this.blobStorage
@@ -159,7 +154,25 @@ export class AppComponent implements OnInit {
             ...options,
             filename
           })
-          .pipe(this.getDownloadInfo(options.containerName, filename))
+          .pipe(
+            this.getDownloadUrlFromReponse(),
+            this.mapDownloadResponse(filename, options)
+          )
+      )
+    );
+
+  private deleteFile = (filename: string) =>
+    this.getStorageOptionsWithContainer().pipe(
+      switchMap(options =>
+        this.blobStorage
+          .deleteBlobItem({
+            ...options,
+            filename
+          })
+          .pipe(
+            this.mapDeleteResponse(filename, options),
+            this.finaliseBlobChange(options.containerName)
+          )
       )
     );
 
@@ -172,7 +185,7 @@ export class AppComponent implements OnInit {
             filename: file.name + new Date().getTime()
           })
           .pipe(
-            this.mapUploadProgress(file, options),
+            this.mapUploadResponse(file, options),
             this.finaliseBlobChange(options.containerName)
           )
       )
@@ -189,30 +202,24 @@ export class AppComponent implements OnInit {
       )
     );
 
-  private getDownloadInfo = (
-    containerName: string,
-    filename: string
-  ): OperatorFunction<BlobDownloadResponseModel, BlobItemDownload> => source =>
+  private mapDownloadResponse = (
+    filename: string,
+    options: BlobContainerRequest
+  ): OperatorFunction<string, BlobItemDownload> => source =>
     source.pipe(
-      switchMap(res =>
-        from(res.blobBody).pipe(
-          map(body => window.URL.createObjectURL(body)),
-          map(url => this.sanitizer.bypassSecurityTrustUrl(url) as string),
-          map(url => ({
-            containerName,
-            filename,
-            url
-          }))
-        )
-      ),
+      map(url => ({
+        containerName: options.containerName,
+        filename,
+        url
+      })),
       startWith({
-        containerName,
+        containerName: options.containerName,
         filename,
         url: ''
       })
     );
 
-  private mapUploadProgress = (
+  private mapUploadResponse = (
     file: File,
     options: BlobContainerRequest
   ): OperatorFunction<number, BlobItemUpload> => source =>
@@ -221,7 +228,40 @@ export class AppComponent implements OnInit {
         filename: file.name,
         containerName: options.containerName,
         progress: parseInt(((progress / file.size) * 100).toString(), 10)
-      }))
+      })),
+      startWith({
+        containerName: options.containerName,
+        filename: file.name,
+        progress: 0
+      })
+    );
+
+  private mapDeleteResponse = (
+    filename: string,
+    options: BlobContainerRequest
+  ): OperatorFunction<BlobDeleteResponse, BlobItem> => source =>
+    source.pipe(
+      map(() => ({
+        filename,
+        containerName: options.containerName
+      })),
+      startWith({
+        containerName: options.containerName,
+        filename
+      })
+    );
+
+  private getDownloadUrlFromReponse = (): OperatorFunction<
+    BlobDownloadResponseModel,
+    string
+  > => source =>
+    source.pipe(
+      switchMap(res =>
+        from(res.blobBody).pipe(
+          map(body => window.URL.createObjectURL(body)),
+          map(url => this.sanitizer.bypassSecurityTrustUrl(url) as string)
+        )
+      )
     );
 
   private scanEntries(): OperatorFunction<BlobItem, BlobItem[]> {
@@ -241,7 +281,7 @@ export class AppComponent implements OnInit {
       );
   }
 
-  private getStorageOptions(): Observable<BlobStorageOptions> {
+  private getStorageOptions(): Observable<BlobStorageRequest> {
     return this.sasGenerator.getSasToken();
   }
 
