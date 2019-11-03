@@ -22,11 +22,7 @@ import { BlobStateService } from './azure-storage/services/blob-state.service';
 
       <hr />
 
-      <app-container-files-list
-        [items]="filesInContainer$ | async"
-        (onDeleteItem)="onDeleteItem($event)"
-        (onDownloadItem)="onDownloadItem($event)"
-      ></app-container-files-list>
+      <app-container-files-list></app-container-files-list>
 
       <pre>{{ blobDeleteResponse$ | async | json }}</pre>
 
@@ -40,7 +36,6 @@ import { BlobStateService } from './azure-storage/services/blob-state.service';
   styles: []
 })
 export class AppComponent {
-  filesInContainer$ = this.blobState.filesInContainer$;
   blobUploadProgress$ = this.blobState.blobUploadProgress$;
   blobDownloadResponse$ = this.blobState.blobDownloadResponse$;
   blobDeleteResponse$ = this.blobState.blobDeleteResponse$;
@@ -49,14 +44,14 @@ export class AppComponent {
   constructor(private blobState: BlobStateService) {}
 
   onDeleteItem(filename: string): void {
-    this.blobState.onDeleteItem(filename);
+    this.blobState.deleteItem(filename);
   }
 
   onDownloadItem(filename: string): void {
-    this.blobState.onDownloadItem(filename);
+    this.blobState.downloadItem(filename);
   }
 
   onFileSelected(files: FileList): void {
-    this.blobState.onFileSelected(files);
+    this.blobState.uploadItems(files);
   }
 }

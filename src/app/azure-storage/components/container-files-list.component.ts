@@ -1,14 +1,14 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { BlobItem } from '@azure/storage-blob';
+import { Component } from '@angular/core';
+import { BlobStateService } from '../services/blob-state.service';
 
 @Component({
   selector: 'app-container-files-list',
   template: `
-    <div *ngFor="let item of items">
+    <div *ngFor="let item of items$ | async">
       <div>
         {{ item.name }} | {{ item.properties.contentLength }} |
         {{ item.properties.lastModified }}
-        <button (click)="onDownloadItem.emit(item.name)">Download File</button>
+        <button (click)="onDownloadClick(item.name)">Download File</button>
         <button (click)="onDeleteClick(item.name)">Delete File</button>
       </div>
     </div>
@@ -16,11 +16,15 @@ import { BlobItem } from '@azure/storage-blob';
   styles: []
 })
 export class ContainerFilesListComponent {
-  @Input() items: BlobItem[];
-  @Output() onDeleteItem = new EventEmitter<string>();
-  @Output() onDownloadItem = new EventEmitter<string>();
+  items$ = this.blobState.itemsInContainer$;
 
-  onDeleteClick(itenName: string) {
-    this.onDeleteItem.emit(itenName);
+  constructor(private blobState: BlobStateService) {}
+
+  onDownloadClick(filename: string): void {
+    this.blobState.downloadItem(filename);
+  }
+
+  onDeleteClick(filename: string): void {
+    this.blobState.deleteItem(filename);
   }
 }

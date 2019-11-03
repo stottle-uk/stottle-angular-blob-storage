@@ -45,7 +45,7 @@ export class BlobStateService {
   containers$ = this.getStorageOptions().pipe(
     switchMap(options => this.blobStorage.getContainers(options))
   );
-  filesInContainer$ = this.selectedContainer$.pipe(
+  itemsInContainer$ = this.selectedContainer$.pipe(
     filter(containerName => !!containerName),
     withLatestFrom(this.getStorageOptions()),
     switchMap(([containerName, options]) =>
@@ -92,19 +92,19 @@ export class BlobStateService {
     private sanitizer: DomSanitizer
   ) {}
 
-  onContainerClick(containerName: string): void {
+  getContainerItems(containerName: string): void {
     this.selectedContainerInner$.next(containerName);
   }
 
-  onDeleteItem(filename: string): void {
+  deleteItem(filename: string): void {
     this.deleteQueueInner$.next(filename);
   }
 
-  onDownloadItem(filename: string): void {
+  downloadItem(filename: string): void {
     this.downloadQueueInner$.next(filename);
   }
 
-  onFileSelected(files: FileList): void {
+  uploadItems(files: FileList): void {
     this.uploadQueueInner$.next(files);
   }
 

@@ -19,6 +19,6 @@ export class ContainerListComponent {
   constructor(private blobState: BlobStateService) {}
 
   onClick(containerName: string): void {
-    this.blobState.onContainerClick(containerName);
+    this.blobState.getContainerItems(containerName);
   }
 }
