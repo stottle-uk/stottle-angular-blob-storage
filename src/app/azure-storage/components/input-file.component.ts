@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { UploadDictionary } from '../services/azureStorage';
+import { BlobItemUpload } from '../services/azureStorage';
 
 @Component({
   selector: 'app-input-file',
@@ -13,13 +13,11 @@ import { UploadDictionary } from '../services/azureStorage';
   styles: []
 })
 export class InputFileComponent {
-  @Input() uploadProgress: UploadDictionary;
+  @Input() uploadProgress: BlobItemUpload[];
   @Output() onFilesSelected = new EventEmitter<FileList>();
 
   get isUploadInProgress() {
-    return Object.values(this.uploadProgress || {}).some(
-      up => up.progress < 100
-    );
+    return (this.uploadProgress || []).some(up => up.progress < 100);
   }
 
   onSelected(event: any) {

@@ -1,13 +1,20 @@
 import { InjectionToken } from '@angular/core';
 import { BlobServiceClient, StoragePipelineOptions } from '@azure/storage-blob';
 
-export interface BlobUploadProgress {
+export interface BlobItem {
   filename: string;
-  progress: number;
-  container: string;
+  containerName: string;
 }
 
-export interface BlobDownload {
+export interface BlobItemDownload extends BlobItem {
+  url: string;
+}
+
+export interface BlobItemUpload extends BlobItem {
+  progress: number;
+}
+
+export interface BlobItemDownload {
   filename: string;
   url: string;
   containerName: string;
@@ -31,7 +38,10 @@ export interface BlobFileRequest extends BlobContainerRequest {
   filename: string;
 }
 
-export type UploadDictionary = { [key: string]: BlobUploadProgress };
+export type Dictionary<T> = { [key: string]: T };
+export type UploadDictionary = { [key: string]: BlobItemUpload };
+
+export type DownloadDictionary = { [key: string]: BlobItemDownload };
 
 export type BlobStorageBuilder = (
   options: BlobStorageOptions

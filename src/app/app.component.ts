@@ -1,11 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-import { BlobDeleteResponse } from '@azure/storage-blob';
+import {
+  BlobDeleteResponse,
+  BlobDownloadResponseModel
+} from '@azure/storage-blob';
 import {
   BehaviorSubject,
   from,
   MonoTypeOperatorFunction,
   Observable,
+  OperatorFunction,
   Subject
 } from 'rxjs';
 import {
@@ -20,14 +24,14 @@ import {
 } from 'rxjs/operators';
 import {
   BlobContainerRequest,
-  BlobDownload,
+  BlobItem,
+  BlobItemDownload,
+  BlobItemUpload,
   BlobStorageOptions,
-  BlobUploadProgress
+  Dictionary
 } from './azure-storage/services/azureStorage';
 import { BlobStorageService } from './azure-storage/services/blob-storage.service';
 import { SasGeneratorService } from './azure-storage/services/sas-generator.service';
-
-type UploadDictionary = { [key: string]: BlobUploadProgress };
 
 @Component({
   selector: 'app-root',
@@ -91,20 +95,11 @@ export class AppComponent implements OnInit {
   );
   blobUploadProgress$ = this.uploadQueue$.pipe(
     mergeMap(file => this.uploadFile(file)),
-    map(item => ({
-      [item.filename]: item
-    })),
-    scan<UploadDictionary>(
-      (items, item) => ({
-        ...items,
-        ...item
-      }),
-      {}
-    )
+    this.scanEntries()
   );
   blobDownloadResponse$ = this.downloadQueue$.pipe(
     mergeMap(filename => this.downloadFile(filename)),
-    scan<BlobDownload>((items, item) => [...items, item], [])
+    this.scanEntries()
   );
 
   get selectedContainer$() {
@@ -164,29 +159,7 @@ export class AppComponent implements OnInit {
             ...options,
             filename
           })
-          .pipe(
-            switchMap(res =>
-              from(res.blobBody).pipe(
-                map(body => window.URL.createObjectURL(body)),
-                map(
-                  url => this.sanitizer.bypassSecurityTrustUrl(url) as string
-                ),
-                map(
-                  url =>
-                    ({
-                      containerName: options.containerName,
-                      filename,
-                      url
-                    } as BlobDownload)
-                ),
-                startWith({
-                  containerName: options.containerName,
-                  filename,
-                  url: ''
-                })
-              )
-            )
-          )
+          .pipe(this.getDownloadInfo(options.containerName, filename))
       )
     );
 
@@ -199,17 +172,7 @@ export class AppComponent implements OnInit {
             filename: file.name + new Date().getTime()
           })
           .pipe(
-            map(
-              progress =>
-                ({
-                  filename: file.name,
-                  container: options.containerName,
-                  progress: parseInt(
-                    ((progress / file.size) * 100).toString(),
-                    10
-                  )
-                } as BlobUploadProgress)
-            ),
+            this.mapUploadProgress(file, options),
             this.finaliseBlobChange(options.containerName)
           )
       )
@@ -225,6 +188,58 @@ export class AppComponent implements OnInit {
           this.selectedContainerInner$.next(containerName)
       )
     );
+
+  private getDownloadInfo = (
+    containerName: string,
+    filename: string
+  ): OperatorFunction<BlobDownloadResponseModel, BlobItemDownload> => source =>
+    source.pipe(
+      switchMap(res =>
+        from(res.blobBody).pipe(
+          map(body => window.URL.createObjectURL(body)),
+          map(url => this.sanitizer.bypassSecurityTrustUrl(url) as string),
+          map(url => ({
+            containerName,
+            filename,
+            url
+          }))
+        )
+      ),
+      startWith({
+        containerName,
+        filename,
+        url: ''
+      })
+    );
+
+  private mapUploadProgress = (
+    file: File,
+    options: BlobContainerRequest
+  ): OperatorFunction<number, BlobItemUpload> => source =>
+    source.pipe(
+      map(progress => ({
+        filename: file.name,
+        containerName: options.containerName,
+        progress: parseInt(((progress / file.size) * 100).toString(), 10)
+      }))
+    );
+
+  private scanEntries(): OperatorFunction<BlobItem, BlobItem[]> {
+    return source =>
+      source.pipe(
+        map(item => ({
+          [`${item.containerName}-${item.filename}`]: item
+        })),
+        scan<Dictionary<BlobItem>>(
+          (items, item) => ({
+            ...items,
+            ...item
+          }),
+          {}
+        ),
+        map(items => Object.values(items))
+      );
+  }
 
   private getStorageOptions(): Observable<BlobStorageOptions> {
     return this.sasGenerator.getSasToken();
