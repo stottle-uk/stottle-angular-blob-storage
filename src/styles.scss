@@ -4,6 +4,10 @@
   display: flex;
   flex-flow: row wrap;
 
+  > * {
+    box-sizing: border-box;
+  }
+
   h2 {
     flex: 70% 0;
     width: 100%;
@@ -17,6 +21,8 @@
 
   .items-list {
     flex: 70% 0;
+    border: 1px solid #eee;
+    padding: 10px;
   }
 
   .item-details {
@@ -25,6 +31,7 @@
     flex-flow: column nowrap;
     width: 100%;
     overflow: hidden;
+    border: 1px solid #eee;
 
     .items-uploaded {
       width: 100%;

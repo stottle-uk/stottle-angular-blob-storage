@@ -63,22 +63,6 @@ export class BlobStorageService {
     return this.getBlobClient(options);
   }
 
-  private downloadFile(
-    blockBlobClient: BlockBlobClient,
-    filename: string
-  ): Observable<number> {
-    return new Observable<number>(observer => {
-      blockBlobClient
-        .download(0, undefined, {
-          onProgress: this.onProgress(observer)
-        })
-        .then(() => {
-          observer.next(-1);
-          observer.complete();
-        }, this.onUploadError(observer));
-    }).pipe(distinctUntilChanged());
-  }
-
   private uploadFile(
     blockBlobClient: BlockBlobClient,
     file: File
