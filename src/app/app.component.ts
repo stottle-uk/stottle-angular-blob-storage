@@ -5,7 +5,7 @@ import { Component } from '@angular/core';
   template: `
     <div style="text-align:center">
       <h1>
-        Welcome to stottle-angular-blob-storage-upload
+        Welcome to stottle-angular-blob-storage
       </h1>
     </div>
 

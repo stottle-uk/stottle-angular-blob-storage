@@ -5,9 +5,10 @@ import { BlobStateService } from '../services/blob-state.service';
   selector: 'app-items-list',
   template: `
     <div *ngFor="let item of items$ | async">
+      <span>{{ item.name }}</span>
+      <span>{{ item.properties.contentLength }}</span>
+      <span>{{ item.properties.lastModified | date: 'short' }}</span>
       <div>
-        {{ item.name }} | {{ item.properties.contentLength }} |
-        {{ item.properties.lastModified | date: 'short' }}
         <button (click)="onDownloadClick(item.name)">Download</button>
         <button (click)="onDeleteClick(item.name)">Delete</button>
       </div>
