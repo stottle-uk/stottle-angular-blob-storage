@@ -1,3 +1,4 @@
 export const environment = {
-  production: true
+  production: true,
+  sasGeneratorUrl: 'http://localhost:4201'
 };

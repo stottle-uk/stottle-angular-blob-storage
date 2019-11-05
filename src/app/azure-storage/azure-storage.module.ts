@@ -1,3 +1,4 @@
+import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { ContainerListComponent } from './components/container-list.component';
@@ -10,7 +11,7 @@ import { SelectedContainerComponent } from './components/selected-container.comp
 import { azureBlobStorageFactory, BLOB_STORAGE_TOKEN } from './services/token';
 
 @NgModule({
-  imports: [BrowserModule],
+  imports: [BrowserModule, HttpClientModule],
   declarations: [
     ContainerListComponent,
     ItemsListComponent,
