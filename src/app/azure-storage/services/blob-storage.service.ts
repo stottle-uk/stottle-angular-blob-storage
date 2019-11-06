@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@angular/core';
 import { TransferProgressEvent } from '@azure/core-http';
 import { PagedAsyncIterableIterator } from '@azure/core-paging';
-import { BlockBlobClient, ContainerItem } from '@azure/storage-blob';
+import { BlockBlobClient } from '@azure/storage-blob';
 import { from, Observable, Subscriber } from 'rxjs';
 import { distinctUntilChanged, scan, startWith } from 'rxjs/operators';
 import {
@@ -21,7 +21,7 @@ export class BlobStorageService {
     private getBlobClient: BlobStorageClientFactory
   ) {}
 
-  getContainers(request: BlobStorageRequest): Observable<ContainerItem[]> {
+  getContainers(request: BlobStorageRequest) {
     const blobServiceClient = this.buildClient(request);
     return this.asyncToObservable(blobServiceClient.listContainers());
   }
@@ -41,10 +41,7 @@ export class BlobStorageService {
     return from(blockBlobClient.delete());
   }
 
-  uploadToBlobStorage(
-    file: File,
-    request: BlobFileRequest
-  ): Observable<number> {
+  uploadToBlobStorage(file: File, request: BlobFileRequest) {
     const blockBlobClient = this.getBlockBlobClient(request);
     return this.uploadFile(blockBlobClient, file);
   }
@@ -63,10 +60,7 @@ export class BlobStorageService {
     return this.getBlobClient(options);
   }
 
-  private uploadFile(
-    blockBlobClient: BlockBlobClient,
-    file: File
-  ): Observable<number> {
+  private uploadFile(blockBlobClient: BlockBlobClient, file: File) {
     return new Observable<number>(observer => {
       blockBlobClient
         .uploadBrowserData(file, {
