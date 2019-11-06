@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { BlobStateService } from '../services/blob-state.service';
+import { BlobDeletesViewStateService } from '../services/blob-deletes-view-state.service';
 
 @Component({
   selector: 'app-items-deleted',
@@ -12,5 +12,5 @@ import { BlobStateService } from '../services/blob-state.service';
 })
 export class ItemsDeletedComponent {
   deletedItems$ = this.blobState.deletedItems$;
-  constructor(private blobState: BlobStateService) {}
+  constructor(private blobState: BlobDeletesViewStateService) {}
 }

@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { BlobDeletesViewStateService } from '../services/blob-deletes-view-state.service';
+import { BlobDownloadsViewStateService } from '../services/blob-downloads-view-state.service';
 import { BlobStateService } from '../services/blob-state.service';
 
 @Component({
@@ -23,13 +25,17 @@ import { BlobStateService } from '../services/blob-state.service';
 export class ItemsListComponent {
   items$ = this.blobState.itemsInContainer$;
 
-  constructor(private blobState: BlobStateService) {}
+  constructor(
+    private blobState: BlobStateService,
+    private blobDeletes: BlobDeletesViewStateService,
+    private blobDownloads: BlobDownloadsViewStateService
+  ) {}
 
   onDownloadClick(filename: string): void {
-    this.blobState.downloadItem(filename);
+    this.blobDownloads.downloadItem(filename);
   }
 
   onDeleteClick(filename: string): void {
-    this.blobState.deleteItem(filename);
+    this.blobDeletes.deleteItem(filename);
   }
 }
