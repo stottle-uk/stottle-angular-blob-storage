@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { BlobStateService } from '../services/blob-state.service';
+import { BlobUploadsViewStateService } from '../services/blob-uploads-view-state.service';
 
 @Component({
   selector: 'app-items-uploaded',
@@ -12,5 +12,5 @@ import { BlobStateService } from '../services/blob-state.service';
 })
 export class ItemsUploadedComponent {
   uploads$ = this.blobState.uploadedItems$;
-  constructor(private blobState: BlobStateService) {}
+  constructor(private blobState: BlobUploadsViewStateService) {}
 }

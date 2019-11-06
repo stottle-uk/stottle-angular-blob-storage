@@ -1,5 +1,5 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { BlobStateService } from '../services/blob-state.service';
+import { BlobUploadsViewStateService } from '../services/blob-uploads-view-state.service';
 
 @Component({
   selector: 'app-input-file',
@@ -19,7 +19,7 @@ export class InputFileComponent {
     HTMLInputElement
   >;
 
-  constructor(private blobState: BlobStateService) {}
+  constructor(private blobState: BlobUploadsViewStateService) {}
 
   onSelected(files: FileList): void {
     this.fileInput.nativeElement.value === '';

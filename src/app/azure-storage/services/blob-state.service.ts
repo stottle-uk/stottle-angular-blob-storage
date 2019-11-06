@@ -38,7 +38,6 @@ import { SasGeneratorService } from './sas-generator.service';
 })
 export class BlobStateService {
   private selectedContainerInner$ = new BehaviorSubject<string>(undefined);
-  private uploadQueueInner$ = new Subject<FileList>();
   private downloadQueueInner$ = new Subject<string>();
   private deleteQueueInner$ = new Subject<string>();
 
@@ -58,10 +57,7 @@ export class BlobStateService {
       )
     )
   );
-  uploadedItems$ = this.uploadQueue$.pipe(
-    mergeMap(file => this.uploadFile(file)),
-    this.scanEntries()
-  );
+
   downloadedItems$ = this.downloadQueue$.pipe(
     mergeMap(filename => this.downloadFile(filename)),
     this.scanEntries()
@@ -83,12 +79,6 @@ export class BlobStateService {
     return this.deleteQueueInner$.asObservable();
   }
 
-  get uploadQueue$() {
-    return this.uploadQueueInner$
-      .asObservable()
-      .pipe(mergeMap(files => from(files)));
-  }
-
   constructor(
     private sasGenerator: SasGeneratorService,
     private blobStorage: BlobStorageService,
@@ -105,10 +95,6 @@ export class BlobStateService {
 
   downloadItem(filename: string): void {
     this.downloadQueueInner$.next(filename);
-  }
-
-  uploadItems(files: FileList): void {
-    this.uploadQueueInner$.next(files);
   }
 
   private downloadFile = (filename: string) =>
@@ -156,7 +142,7 @@ export class BlobStateService {
       )
     );
 
-  private finaliseBlobChange = <T>(
+  finaliseBlobChange = <T>(
     containerName: string
   ): MonoTypeOperatorFunction<T> => source =>
     source.pipe(
@@ -229,7 +215,7 @@ export class BlobStateService {
       )
     );
 
-  private scanEntries<T extends BlobItem>(): OperatorFunction<T, T[]> {
+  scanEntries<T extends BlobItem>(): OperatorFunction<T, T[]> {
     return source =>
       source.pipe(
         map(item => ({
@@ -250,7 +236,7 @@ export class BlobStateService {
     return this.sasGenerator.getSasToken();
   }
 
-  private getStorageOptionsWithContainer(): Observable<BlobContainerRequest> {
+  getStorageOptionsWithContainer(): Observable<BlobContainerRequest> {
     return this.getStorageOptions().pipe(
       withLatestFrom(this.selectedContainer$),
       map(([options, containerName]) => ({ ...options, containerName }))
