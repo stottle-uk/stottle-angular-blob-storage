@@ -1,12 +1,8 @@
 import { Injectable } from '@angular/core';
 import { BlobDeleteResponse } from '@azure/storage-blob';
 import { OperatorFunction, Subject } from 'rxjs';
-import { map, mergeMap, scan, startWith, switchMap } from 'rxjs/operators';
-import {
-  BlobContainerRequest,
-  BlobItem,
-  Dictionary
-} from '../types/azure-storage';
+import { map, mergeMap, startWith, switchMap } from 'rxjs/operators';
+import { BlobContainerRequest, BlobItem } from '../types/azure-storage';
 import { BlobSharedViewStateService } from './blob-shared-view-state.service';
 import { BlobStorageService } from './blob-storage.service';
 
@@ -63,21 +59,4 @@ export class BlobDeletesViewStateService {
         containerName: options.containerName
       })
     );
-
-  scanEntries<T extends BlobItem>(): OperatorFunction<T, T[]> {
-    return source =>
-      source.pipe(
-        map(item => ({
-          [`${item.containerName}-${item.filename}`]: item
-        })),
-        scan<Dictionary<T>>(
-          (items, item) => ({
-            ...items,
-            ...item
-          }),
-          {}
-        ),
-        map(items => Object.values(items))
-      );
-  }
 }
