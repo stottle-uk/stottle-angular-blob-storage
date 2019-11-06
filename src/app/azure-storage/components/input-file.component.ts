@@ -1,20 +1,32 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { BlobStateService } from '../services/blob-state.service';
 
 @Component({
   selector: 'app-input-file',
   template: `
     <input
+      style="display: none"
       type="file"
+      #fileInput
       multiple="multiple"
       (change)="onSelected($event.target.files)"
     />
+    <button (click)="showFileDialog()">Click here to Upload File</button>
   `
 })
 export class InputFileComponent {
+  @ViewChild('fileInput', { static: false }) fileInput: ElementRef<
+    HTMLInputElement
+  >;
+
   constructor(private blobState: BlobStateService) {}
 
   onSelected(files: FileList): void {
+    this.fileInput.nativeElement.value === '';
     this.blobState.uploadItems(files);
+  }
+
+  showFileDialog(): void {
+    this.fileInput.nativeElement.click();
   }
 }

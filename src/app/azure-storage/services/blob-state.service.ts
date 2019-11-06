@@ -47,12 +47,15 @@ export class BlobStateService {
   );
   itemsInContainer$ = this.selectedContainer$.pipe(
     filter(containerName => !!containerName),
-    withLatestFrom(this.getStorageOptions()),
-    switchMap(([containerName, options]) =>
-      this.blobStorage.listBlobsInContainer({
-        ...options,
-        containerName
-      })
+    switchMap(containerName =>
+      this.getStorageOptions().pipe(
+        switchMap(options =>
+          this.blobStorage.listBlobsInContainer({
+            ...options,
+            containerName
+          })
+        )
+      )
     )
   );
   uploadedItems$ = this.uploadQueue$.pipe(

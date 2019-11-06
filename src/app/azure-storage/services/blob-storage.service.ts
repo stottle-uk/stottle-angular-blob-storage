@@ -3,7 +3,7 @@ import { TransferProgressEvent } from '@azure/core-http';
 import { PagedAsyncIterableIterator } from '@azure/core-paging';
 import { BlockBlobClient, ContainerItem } from '@azure/storage-blob';
 import { from, Observable, Subscriber } from 'rxjs';
-import { distinctUntilChanged, scan } from 'rxjs/operators';
+import { distinctUntilChanged, scan, startWith } from 'rxjs/operators';
 import {
   BlobContainerRequest,
   BlobFileRequest,
@@ -114,6 +114,9 @@ export class BlobStorageService {
             observer.error(e);
           }
         })()
-    ).pipe(scan<T>((items, item) => [...items, item], []));
+    ).pipe(
+      scan<T>((items, item) => [...items, item], []),
+      startWith([] as T[])
+    );
   }
 }
