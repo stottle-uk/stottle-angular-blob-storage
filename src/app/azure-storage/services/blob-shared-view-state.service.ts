@@ -25,7 +25,7 @@ import { SasGeneratorService } from './sas-generator.service';
 @Injectable({
   providedIn: 'root'
 })
-export class BlobStateService {
+export class BlobSharedViewStateService {
   private selectedContainerInner$ = new BehaviorSubject<string>(undefined);
 
   containers$ = this.getStorageOptions().pipe(
@@ -69,22 +69,20 @@ export class BlobStateService {
       )
     );
 
-  scanEntries<T extends BlobItem>(): OperatorFunction<T, T[]> {
-    return source =>
-      source.pipe(
-        map(item => ({
-          [`${item.containerName}-${item.filename}`]: item
-        })),
-        scan<Dictionary<T>>(
-          (items, item) => ({
-            ...items,
-            ...item
-          }),
-          {}
-        ),
-        map(items => Object.values(items))
-      );
-  }
+  scanEntries = <T extends BlobItem>(): OperatorFunction<T, T[]> => source =>
+    source.pipe(
+      map(item => ({
+        [`${item.containerName}-${item.filename}`]: item
+      })),
+      scan<Dictionary<T>>(
+        (items, item) => ({
+          ...items,
+          ...item
+        }),
+        {}
+      ),
+      map(items => Object.values(items))
+    );
 
   getStorageOptionsWithContainer(): Observable<BlobContainerRequest> {
     return this.getStorageOptions().pipe(

@@ -7,7 +7,7 @@ import {
   BlobItem,
   Dictionary
 } from '../types/azure-storage';
-import { BlobStateService } from './blob-state.service';
+import { BlobSharedViewStateService } from './blob-shared-view-state.service';
 import { BlobStorageService } from './blob-storage.service';
 
 @Injectable({
@@ -27,7 +27,7 @@ export class BlobDeletesViewStateService {
 
   constructor(
     private blobStorage: BlobStorageService,
-    private blobState: BlobStateService
+    private blobState: BlobSharedViewStateService
   ) {}
 
   deleteItem(filename: string): void {

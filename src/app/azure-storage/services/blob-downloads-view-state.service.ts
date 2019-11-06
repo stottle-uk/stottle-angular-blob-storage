@@ -4,7 +4,7 @@ import { BlobDownloadResponseModel } from '@azure/storage-blob';
 import { from, OperatorFunction, Subject } from 'rxjs';
 import { map, mergeMap, startWith, switchMap } from 'rxjs/operators';
 import { BlobContainerRequest, BlobItemDownload } from '../types/azure-storage';
-import { BlobStateService } from './blob-state.service';
+import { BlobSharedViewStateService } from './blob-shared-view-state.service';
 import { BlobStorageService } from './blob-storage.service';
 
 @Injectable({
@@ -24,7 +24,7 @@ export class BlobDownloadsViewStateService {
 
   constructor(
     private blobStorage: BlobStorageService,
-    private blobState: BlobStateService,
+    private blobState: BlobSharedViewStateService,
     private sanitizer: DomSanitizer
   ) {}
 

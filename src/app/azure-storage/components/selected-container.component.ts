@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { BlobStateService } from '../services/blob-state.service';
+import { BlobSharedViewStateService } from '../services/blob-shared-view-state.service';
 
 @Component({
   selector: 'app-selected-container',
@@ -14,5 +14,5 @@ import { BlobStateService } from '../services/blob-state.service';
 export class SelectedContainerComponent {
   selectedContainer$ = this.blobState.selectedContainer$;
 
-  constructor(private blobState: BlobStateService) {}
+  constructor(private blobState: BlobSharedViewStateService) {}
 }
