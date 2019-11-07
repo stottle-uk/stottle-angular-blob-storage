@@ -13,7 +13,7 @@ export class SasGeneratorService {
   getSasToken(): Observable<BlobStorageRequest> {
     if (environment.production) {
       return this.http.get<BlobStorageRequest>(
-        `${environment.sasGeneratorUrl}/api/GenerateSas`
+        `${environment.sasGeneratorUrl}/api/GenerateSasToken`
       );
     }
     return of({

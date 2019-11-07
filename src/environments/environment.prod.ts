@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  sasGeneratorUrl: 'http://localhost:4201',
+  sasGeneratorUrl: 'https://stottle-generate-sas-token.azurewebsites.net',
   devSasToken: ''
 };
