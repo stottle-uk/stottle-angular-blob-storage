@@ -4,7 +4,7 @@ import { BlobSharedViewStateService } from '../services/blob-shared-view-state.s
 @Component({
   selector: 'app-container-list',
   template: `
-    <h2>Containers</h2>
+    <h3>Containers</h3>
     <div *ngFor="let container of containers$ | async">
       {{ container.name }}
       <button (click)="onClick(container.name)">View</button>
