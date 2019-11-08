@@ -4,7 +4,7 @@ import { Component } from '@angular/core';
   selector: 'app-header',
   template: `
     <div>
-      <h1 style="text-align: center">stottle-react-blob-storage</h1>
+      <h1 style="text-align: center">stottle-angular-blob-storage</h1>
       <div>
         Medium Article:
         <a

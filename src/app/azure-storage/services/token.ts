@@ -12,7 +12,7 @@ export const BLOB_STORAGE_TOKEN = new InjectionToken<BlobStorageClientFactory>(
 export function azureBlobStorageFactory(): BlobStorageClientFactory {
   const buildConnectionString = (options: BlobStorageRequest) => {
     return (
-      `BlobEndpoint=https://${options.storageUri}.blob.core.windows.net/;` +
+      `BlobEndpoint=${options.storageUri};` +
       `SharedAccessSignature=${options.storageAccessToken}`
     );
   };

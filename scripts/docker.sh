@@ -1,7 +1,7 @@
-docker build -t stottleuk/angular-blob-storage  .
+docker build -t stottleuk/blob-storage-angular .
 
-docker tag stottleuk/angular-blob-storage stottlecontainerregistry.azurecr.io/angular-blob-storage
+docker tag stottleuk/blob-storage-angular stottlecontainerregistry.azurecr.io/blob-storage-angular
 
-docker run -p 4201:80 --rm stottlecontainerregistry.azurecr.io/angular-blob-storage
+docker run -p 4201:80 --rm stottlecontainerregistry.azurecr.io/blob-storage-angular
 
-# docker push stottlecontainerregistry.azurecr.io/angular-blob-storage
+# docker push stottlecontainerregistry.azurecr.io/blob-storage-angular
