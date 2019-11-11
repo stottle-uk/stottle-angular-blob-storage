@@ -2,6 +2,43 @@
 
 Example code used for medium article about [Uploading to blob storage](https://medium.com/@stuarttottle/upload-to-azure-blob-storage-with-angular-8-2ed80dfc6672).
 
+## App Folder Structure
+
+```
+app
+│   app.component.ts
+│
+└───azure-storage
+    │   * azure-storage.module.ts
+    │
+    └───components
+    │   │   container-list.component.ts
+    │   │   input-file.component.ts
+    │   │   items-deleted.component.ts
+    │   │   items-downloaded.component.ts
+    │   │   items-list.component.ts
+    │   │   items-uploaded.component.ts
+    │   │   selected-container.component.ts
+    │
+    └───services
+    │   │   blob-deletes-view-state.service.ts
+    │   │   blob-downloadeds-view-state.service.ts
+    │   │   blob-shared-view-state.service.ts
+    │   │   blob-storage.service.ts
+    │   │   blob-uploades-view-state.service.ts
+    │   │   sas-generator.service.ts
+    │   │   * token.ts
+    │
+    └───types
+    │   │   azure-storage.d.ts
+
+* Project specific files
+
+
+```
+
+---
+
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.3.17.
 
 ## Development server

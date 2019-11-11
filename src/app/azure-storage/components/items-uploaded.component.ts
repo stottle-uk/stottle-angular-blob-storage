@@ -5,9 +5,9 @@ import { BlobUploadsViewStateService } from '../services/blob-uploads-view-state
   selector: 'app-items-uploaded',
   template: `
     <h3>Uploads</h3>
-    <div *ngFor="let upload of uploads$ | async">
+    <ng-container *ngFor="let upload of uploads$ | async">
       <pre>{{ upload | json }}</pre>
-    </div>
+    </ng-container>
   `
 })
 export class ItemsUploadedComponent {
