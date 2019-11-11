@@ -1,6 +1,6 @@
 # StottleAngularBlobStorage
 
-Example code used for medium article about [Uploading to blob storage](https://medium.com/@stuarttottle/upload-to-azure-blob-storage-with-angular-8-2ed80dfc6672).
+Example code used for medium article about [Uploading to blob storage](https://medium.com/@stuarttottle/upload-to-azure-blob-storage-with-angular-8-2ed80dfc6672) and [Comparing React and Angular](https://medium.com/@stuarttottle/comparing-the-same-feature-written-in-react-and-angular-3f6ae04ceef6)
 
 ## App Folder Structure
 
