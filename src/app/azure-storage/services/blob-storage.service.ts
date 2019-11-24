@@ -69,10 +69,7 @@ export class BlobStorageService {
             blobContentType: file.type
           }
         })
-        .then(
-          this.onUploadComplete(observer, file),
-          this.onUploadError(observer)
-        );
+        .then(this.onUploadComplete(observer, file), this.onUploadError(observer));
     }).pipe(distinctUntilChanged());
   }
 
@@ -88,13 +85,10 @@ export class BlobStorageService {
   }
 
   private onProgress(observer: Subscriber<number>) {
-    return (progress: TransferProgressEvent) =>
-      observer.next(progress.loadedBytes);
+    return (progress: TransferProgressEvent) => observer.next(progress.loadedBytes);
   }
 
-  private asyncToObservable<T, TService>(
-    iterable: PagedAsyncIterableIterator<T, TService>
-  ) {
+  private asyncToObservable<T, TService>(iterable: PagedAsyncIterableIterator<T, TService>) {
     return new Observable<T>(
       observer =>
         void (async () => {
@@ -109,7 +103,7 @@ export class BlobStorageService {
           }
         })()
     ).pipe(
-      scan<T>((items, item) => [...items, item], []),
+      scan<T, T[]>((items, item) => [...items, item], []),
       startWith([] as T[])
     );
   }
