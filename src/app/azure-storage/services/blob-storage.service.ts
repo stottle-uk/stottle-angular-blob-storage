@@ -1,19 +1,19 @@
-import { Inject, Injectable } from '@angular/core';
-import { TransferProgressEvent } from '@azure/core-http';
-import { PagedAsyncIterableIterator } from '@azure/core-paging';
-import { BlockBlobClient } from '@azure/storage-blob';
-import { from, Observable, Subscriber } from 'rxjs';
-import { distinctUntilChanged, scan, startWith } from 'rxjs/operators';
+import { Inject, Injectable } from "@angular/core";
+import { TransferProgressEvent } from "@azure/core-http";
+import { PagedAsyncIterableIterator } from "@azure/core-paging";
+import { BlockBlobClient } from "@azure/storage-blob";
+import { from, Observable, Subscriber } from "rxjs";
+import { distinctUntilChanged, scan, startWith } from "rxjs/operators";
 import {
   BlobContainerRequest,
   BlobFileRequest,
   BlobStorageClientFactory,
   BlobStorageRequest
-} from '../types/azure-storage';
-import { BLOB_STORAGE_TOKEN } from './token';
+} from "../types/azure-storage";
+import { BLOB_STORAGE_TOKEN } from "./token";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root"
 })
 export class BlobStorageService {
   constructor(
@@ -69,7 +69,10 @@ export class BlobStorageService {
             blobContentType: file.type
           }
         })
-        .then(this.onUploadComplete(observer, file), this.onUploadError(observer));
+        .then(
+          this.onUploadComplete(observer, file),
+          this.onUploadError(observer)
+        );
     }).pipe(distinctUntilChanged());
   }
 
@@ -85,10 +88,13 @@ export class BlobStorageService {
   }
 
   private onProgress(observer: Subscriber<number>) {
-    return (progress: TransferProgressEvent) => observer.next(progress.loadedBytes);
+    return (progress: TransferProgressEvent) =>
+      observer.next(progress.loadedBytes);
   }
 
-  private asyncToObservable<T, TService>(iterable: PagedAsyncIterableIterator<T, TService>) {
+  private asyncToObservable<T, TService>(
+    iterable: PagedAsyncIterableIterator<T, TService>
+  ) {
     return new Observable<T>(
       observer =>
         void (async () => {
