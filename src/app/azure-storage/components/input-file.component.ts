@@ -22,8 +22,8 @@ export class InputFileComponent {
   constructor(private blobState: BlobUploadsViewStateService) {}
 
   onSelected(files: FileList): void {
-    this.fileInput.nativeElement.value = '';
     this.blobState.uploadItems(files);
+    this.fileInput.nativeElement.value = '';
   }
 
   showFileDialog(): void {
